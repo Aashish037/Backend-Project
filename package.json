@@ -4,6 +4,8 @@
   "description": "A practice project on backend",
   "main": "index.js",
   "scripts": {
+    "start": "node/src/index.js",
+    "dev": "nodemon/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -11,5 +13,8 @@
     "javascript"
   ],
   "author": "Aashish Singh",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
 }
