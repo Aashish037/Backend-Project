@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utlis/cloudinary.js";
 import { ApiResponse } from "../utlis/ApiResponse.js";
 import jwt from 'jsonwebtoken'
+import { deleteUserImages } from "../utlis/deleteImage.js";
 
 const generateAccessAndRefreshToken = async(userId) => {
     try {
@@ -333,11 +334,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     }
 
     // delete old avatar from cloudinary if exists
-    const deletedUserAvatar = await User.findById(req.user._id);
-
-    if (deletedUserAvatar?.avatar) {
-        await deleteFromCloudinary(deletedUserAvatar.avatar);
-    }
+        await deleteUserImages(req.user._id, "avatar");
 
     // upload new avatar to cloudinary
     const avatar = await uploadOnCloudinary(avatarLocalPath);
@@ -351,6 +348,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         { $set: { avatar: avatar.url } },
         { new: true }
     ).select("-password");
+
+        
 
     return res
         .status(200)
@@ -372,14 +371,10 @@ const updateUserCoverAvatar = asyncHandler(async (req, res) => {
     }
 
     // delete old cover image from cloudinary if exists
-    const deletedUserCover = await User.findById(req.user._id);
-
-    if (deletedUserCover?.cover) {
-        await deleteFromCloudinary(deletedUserCover.cover);
-    }
-
+    await deleteUserImages(req.user._id, "coverImage");
+    
     // upload new cover image to cloudinary
-    const cover = await uploadOnCloudinary(CoverLocalPath);
+    const cover = await uploadOnCloudinary(coverLocalPath);
 
     if(!cover.url){
         throw new ApiError(500, "Failed to upload cover image to cloudinary")
@@ -391,6 +386,8 @@ const updateUserCoverAvatar = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password");
 
+    
+
     return res
         .status(200)
         .json(
@@ -401,6 +398,8 @@ const updateUserCoverAvatar = asyncHandler(async (req, res) => {
             )
         )
 })
+
+
 
 export {
     registerUser,
